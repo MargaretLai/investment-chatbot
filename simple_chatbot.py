@@ -8,7 +8,12 @@ load_dotenv()
 client = OpenAI(
     api_key = os.getenv("OPENAI_API_KEY")
 )
-messages = []
+messages = [
+    {
+        "role": "system",
+        "content": "You are an investment assistant"
+    }
+]
 
 # Work flow
 def communicate(user):
@@ -21,7 +26,6 @@ def communicate(user):
         model="gpt-3.5-turbo",
         messages=messages,
         temperature=0.7,
-        max_tokens = 150
     )
 
     messages.append({
@@ -36,7 +40,7 @@ demo = gr.Interface(
     fn=communicate,
     inputs=["text"],
     outputs=["text"],
-    title = "ChatGPT Assistant"
+    title = "Investment Assistant"
 )
 
 demo.launch()
