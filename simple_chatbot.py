@@ -1,4 +1,5 @@
 import os
+import gradio as gr
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -10,15 +11,10 @@ client = OpenAI(
 messages = []
 
 # Work flow
-print("------ Conversation Started ------\n")
-print("****** Say bye to end the conversation *****\n")
-
-user_input = input("What can I help you with?\n")
-
-while user_input.lower() != "bye":  # Keep conversation going as long as user doesn't say bye
+def communicate(user):
     messages.append({
         "role": "user",
-        "content": user_input
+        "content": user
     })
 
     completion = client.chat.completions.create(
@@ -28,13 +24,19 @@ while user_input.lower() != "bye":  # Keep conversation going as long as user do
         max_tokens = 150
     )
 
-    print(completion.choices[0].message.content)
-
     messages.append({
         "role": "system",
         "content": completion.choices[0].message.content
     })
 
-    user_input = input()
+    return completion.choices[0].message.content
 
-print("\n------ Conversation Ended ------")
+# Create interface
+demo = gr.Interface(
+    fn=communicate,
+    inputs=["text"],
+    outputs=["text"],
+    title = "ChatGPT Assistant"
+)
+
+demo.launch()
